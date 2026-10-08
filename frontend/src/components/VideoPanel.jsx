@@ -17,6 +17,7 @@ export function VideoPanel({
   onStopSession,
   isStarting = false,
   effectiveRiskLevel,
+  onCaptureSnapshot,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -511,7 +512,7 @@ export function VideoPanel({
               <button
                 onClick={() => {
                   setSource('webcam')
-                  onStartSession()
+                  onStartSession('webcam')
                 }}
                 disabled={isStarting}
                 className="h-9 px-space-md rounded-lg bg-primary-container hover:bg-primary text-on-primary-container font-semibold text-xs inline-flex items-center gap-space-xs transition-all shadow-sm"
@@ -525,7 +526,7 @@ export function VideoPanel({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="video/mp4,video/avi,video/mov,video/x-matroska,video/webm"
+                accept="video/*,.mp4,.avi,.mov,.mkv,.webm,.m4v"
                 onChange={handleFileUpload}
                 className="hidden"
               />
@@ -545,7 +546,10 @@ export function VideoPanel({
 
               {fileRef && (
                 <button
-                  onClick={onStartSession}
+                  onClick={() => {
+                    setSource('upload')
+                    onStartSession('upload', fileRef)
+                  }}
                   disabled={isStarting}
                   className="h-9 px-space-md rounded-lg bg-secondary-container hover:bg-secondary text-on-secondary-container font-semibold text-xs inline-flex items-center gap-space-xs transition-all shadow-sm"
                   type="button"
@@ -571,8 +575,14 @@ export function VideoPanel({
         <div className="flex items-center gap-space-sm">
           <button
             className="w-9 h-9 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-surface-border/60 flex items-center justify-center text-text-primary transition-colors"
-            title="Capture Snapshot"
-            onClick={() => alert('Snapshot captured to session logs!')}
+            title="Capture Snapshot Evidence"
+            onClick={() => {
+              if (onCaptureSnapshot) {
+                onCaptureSnapshot()
+              } else {
+                alert('Snapshot captured to session logs!')
+              }
+            }}
             type="button"
           >
             <span className="material-symbols-outlined text-[18px]">photo_camera</span>
